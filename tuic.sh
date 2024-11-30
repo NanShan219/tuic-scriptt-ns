@@ -87,7 +87,6 @@ tuic_cert(){
 }
 
 tuic_port(){
-    read -p "设置 tuic 端口 [1-65535]（回车则随机分配端口）：" port
     [[ -z $port ]] && port=$(shuf -i 2000-65535 -n 1)
     until [[ -z $(ss -tunlp | grep -w udp | awk '{print $5}' | sed 's/.*://g' | grep -w "$port") ]]; do
         if [[ -n $(ss -tunlp | grep -w udp | awk '{print $5}' | sed 's/.*://g' | grep -w "$port") ]]; then
@@ -189,6 +188,20 @@ Sagernet、Nekobox 与 小火箭 配置说明（以下6项必填）：
     拥塞控制：bbr
     跳过服务器证书验证：开启
 }
+EOF
+    cat << EOF >/etc/systemd/system/tuic.service
+[Unit]
+Description=tuic Service
+Documentation=https://gitlab.com/Misaka-blog/tuic-script
+After=network.target
+[Service]
+User=root
+ExecStart=/usr/local/bin/tuic -c /etc/tuic/tuic.json
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=infinity
+[Install]
+WantedBy=multi-user.target
 EOF
 
     url="tuic://$uuid:$passwd@$finaldomain:$port?congestion_control=bbr&udp_relay_mode=quic&alpn=h3#tuicv5-misaka"
