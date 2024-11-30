@@ -126,11 +126,11 @@ inst_tuv5(){
     tuic_cert
     tuic_port
 
-    read -p "设置 tuic UUID（回车跳过为随机 UUID）：" uuid
+    
     [[ -z $uuid ]] && uuid=$(cat /proc/sys/kernel/random/uuid)
     yellow "使用在 tuic 节点的 UUID 为：$uuid"
 
-    read -p "设置 tuic 密码（回车跳过为随机字符）：" passwd
+    
     [[ -z $passwd ]] && passwd=$(date +%s%N | md5sum | cut -c 1-8)
     yellow "使用在 tuic 节点的密码为：$passwd"
 
